@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import sys
-
-
 try:
     from setuptools import setup
 except ImportError:
@@ -25,7 +21,7 @@ test_requirements = [
 setup(
     name='dropup',
     version='0.1.0',
-    description='A shotrt',
+    description='A simple command line',
     long_description=readme + '\n\n' + history,
     author='zhangbo3',
     author_email='zhangbo3@yy.com',
@@ -48,9 +44,6 @@ setup(
         "Programming Language :: Python :: 2",
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
     ],
     test_suite='tests',
     tests_require=test_requirements
