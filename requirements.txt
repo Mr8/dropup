@@ -1,1 +1,6 @@
-wheel==0.23.0
+argparse==1.2.1
+dropbox==2.1.0
+requests==2.3.0
+upyun==2.2.0
+urllib3==1.9
+wsgiref==0.1.2
