@@ -13,6 +13,7 @@ dropup
 
 
 A simeple command line client of Dropbox and Upyun.
+
 * Free software: BSD license
 * Documentation: http://dropup.readthedocs.org.
 
