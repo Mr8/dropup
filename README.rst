@@ -12,8 +12,7 @@ dropup
         :target: https://pypi.python.org/pypi/dropup
 
 
-A shotrt
-
+A simeple command line client of Dropbox and Upyun.
 * Free software: BSD license
 * Documentation: http://dropup.readthedocs.org.
 
