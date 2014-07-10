@@ -170,6 +170,7 @@ class CmdLine(Cmd):
         lenArg = len(arg)
         if lenArg == 1:
             remotePath = arg[0]
+            localPath = None
         elif lenArg == 2:
             remotePath, localPath = arg
         else:
