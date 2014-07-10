@@ -53,6 +53,7 @@ class DropboxCli(TranslatorIf):
         except ErrorResponse, e:
             print '[ERROR]Login error:%s' %str(e)
             return
+        return True
 
     def upload(self, localPath, remotePath):
         '''Implement dropbox upload, which implement interface of Class
@@ -123,19 +124,23 @@ class CmdLine(Cmd):
             1.upload [localPath] [remotePath];
             2.get [remotePath] [localPath];
     '''
+    ALL_CMD = ['do_upload', 'do_get', 'do_quit']
 
     def __init__(self, name, tranlator):
         Cmd.__init__(self)
         self.prompt = name + '> '
         self.translator = tranlator
+        self.login = None
 
-    def do_EOF(self):
+    def do_EOF(self, line):
         '''A method which implement Cmd's interface'''
         return True
 
     def do_login(self, user=None, pwd=None):
-        '''login command'''
-        return self.translator.login(user, pwd)
+        '''[*]login command, dropbox need redirect to OAuth webset and get token'''
+        if self.translator.login(user, pwd):
+            self.login = True
+            print '[INFO]Login success!'
 
     def do_upload(self, localPath, remotePath):
         '''upload command
@@ -155,16 +160,37 @@ class CmdLine(Cmd):
 
         return self.translator.download(remotePath, localPath)
 
+    def do_help(self, line):
+        for cmd in self.ALL_CMD:
+            print '---------------------------------'
+            print getattr(self, cmd).__doc__ or ''
+
+    def do_quit(self):
+        '''quit command
+        Non arguments
+        quit this console'''
+        exit(0)
+
     def emptyline(self):
         '''command line with ENTER keyboard'''
         pass
 
     def parseline(self, line):
+        def _parseline(line):
+            '''parse line with white space'''
+            parsedLine = Cmd.parseline(self, line)
+            return parsedLine[0], tuple(parsedLine[1].split(' ')), line
+
+        if line and line.strip() == 'login':
+            return _parseline(line)
+
+        if not self.login:
+            print '[INFO]Please login first'
+            print getattr(self, 'do_login').__doc__
+            return (None, None, line)
         if not line:
             return (None, None, line)
-        parsedLine = Cmd.parseline(self, line)
-        ret = [parsedLine[0], tuple(parsedLine[1].split(' ')), line]
-        return ret
+        return _parseline(line)
 
 STORE_CLOUD = {
     'dropbox' : DropboxCli,
