@@ -34,6 +34,7 @@ class UpyunCli(TranslatorIf):
 
         with open(localPath, 'rb') as fp:
             try:
+                self.operator.mkdir(os.path.dirname(remotePath))
                 if not self.operator.put(remotePath, fp):
                     print '[ERROR] upload file %s error' %localPath
                     return
