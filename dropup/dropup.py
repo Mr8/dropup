@@ -66,8 +66,8 @@ class DropboxCli(TranslatorIf):
         TranslatorIf'''
 
         if not os.path.exists(localPath):
-            print '[ERRPR]Local file %s not exists'
-        return
+            print '[ERRPR]Local file %s not exists' %localPath
+            return
 
         if not remotePath.startswith('/'):
             remotePath = '/' + remotePath
@@ -91,6 +91,7 @@ class DropboxCli(TranslatorIf):
                   retDict.get('client_mtime', '')
                 )
              )
+        return True
 
     def download(self, remotePath, localPath):
         '''Implement dropbox download, which implement interface of Class
