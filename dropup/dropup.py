@@ -80,9 +80,9 @@ class DropboxCli(TranslatorIf):
             return
 
         try:
-            retDict = json.loads(retJson)
-        except ValueError, e:
-            print '[ERROR]Upload file error:%s' %str(e)
+            retDict = json.dumps(retJson)
+        except (ValueError, TypeError) :
+            print '[ERROR]Upload file error'
             return
 
         print('[INFO]Upload file %s success, file size:%s, upload time:%s'
@@ -91,7 +91,6 @@ class DropboxCli(TranslatorIf):
                   retDict.get('client_mtime', '')
                 )
              )
-        return True
 
     def download(self, remotePath, localPath):
         '''Implement dropbox download, which implement interface of Class
@@ -124,12 +123,14 @@ class DropboxCli(TranslatorIf):
         with open(localPath, 'wb') as f:
             f.write(remoteFile.read())
 
+        print '[INFO]Download file %s success' %localPath
+
 class CmdLine(Cmd):
     '''
     Command line client, which inhance from cmd.Cmd.
-        Implemented two comdmand:
-            1.upload [localPath] [remotePath];
-            2.get [remotePath] [localPath];
+    Implemented two comdmand:
+        1.upload [localPath] [remotePath];
+        2.get [remotePath] [localPath];
     '''
     ALL_CMD = ['do_upload', 'do_get', 'do_quit']
 
@@ -144,7 +145,8 @@ class CmdLine(Cmd):
         return True
 
     def do_login(self, user=None, pwd=None):
-        '''[*]login command, dropbox need redirect to OAuth webset and get token'''
+        '''login command
+        [*]No argument, dropbox need redirect to OAuth webset and get token'''
         if self.translator.login(user, pwd):
             self.login = True
             print '[INFO]Login success!'
@@ -168,6 +170,7 @@ class CmdLine(Cmd):
         '''
         if not arg:
             print '[ERROR]Get argument error, not null'
+
         lenArg = len(arg)
         if lenArg == 1:
             remotePath = arg[0]
@@ -177,6 +180,7 @@ class CmdLine(Cmd):
         else:
             print '[ERROR]Get argument error, not %d' %lenArg
             return
+
         return self.translator.download(remotePath, localPath)
 
     def do_help(self, line):
