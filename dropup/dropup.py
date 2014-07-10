@@ -5,6 +5,7 @@
 
 import os
 import json
+import shlex
 from cmd import Cmd
 
 from config import DROPBOXCONFIG
@@ -178,10 +179,13 @@ class CmdLine(Cmd):
     def parseline(self, line):
         def _parseline(line):
             '''parse line with white space'''
-            parsedLine = Cmd.parseline(self, line)
-            return parsedLine[0], tuple(parsedLine[1].split(' ')), line
+            lines = shlex.split(line)
+            if len(lines) == 0:
+                return None, None, line
+            else:
+                return lines[0], lines[1:], line
 
-        if line and line.strip() == 'login':
+        if line and line.strip() in ('login', 'help', 'EOF'):
             return _parseline(line)
 
         if not self.login:
