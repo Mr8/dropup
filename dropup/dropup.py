@@ -148,24 +148,33 @@ class CmdLine(Cmd):
             self.login = True
             print '[INFO]Login success!'
 
-    @modify
-    def do_upload(self, localPath, remotePath):
+    def do_upload(self, arg):
         '''upload command
         Argument List:[localPath, remotePath]
         ex:
             upload /local/tmp.txt /remote/tmp.txt
         '''
 
-        return self.translator.upload(localPath, remotePath)
+        if len(arg) != 2:
+            print '[ERROR]Upload argument error, must be 2'
+        return self.translator.upload(arg[0], arg[1])
 
-    @modify
-    def do_get(self, remotePath, localPath=None):
+    def do_get(self, arg):
         '''get command
         Argument List:[remotePath, localPath]
         ex:
             get /remote/tmp.txt /local/tmp.txt
         '''
-
+        if not arg:
+            print '[ERROR]Get argument error, not null'
+        lenArg = len(arg)
+        if lenArg == 1:
+            remotePath = arg[0]
+        elif lenArg == 2:
+            remotePath, localPath = arg
+        else:
+            print '[ERROR]Get argument error, not %d' %lenArg
+            return
         return self.translator.download(remotePath, localPath)
 
     def do_help(self, line):
