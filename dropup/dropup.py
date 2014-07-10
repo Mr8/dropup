@@ -13,10 +13,6 @@ from config import DROPBOXCONFIG
 from dropbox import client as dpClient
 from dropbox.rest import ErrorResponse
 
-def modify(func):
-    def inner(self, arg):
-        func(self, *arg)
-    return inner
 
 class TranslatorIf(object):
     '''A base interfaces of translator'''
