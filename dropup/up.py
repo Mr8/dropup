@@ -14,6 +14,7 @@ class UpyunCli(TranslatorIf):
         self.operator = None
 
     def login(self, *arg, **wargs):
+        print arg
         user, pwd = arg
         try:
             self.operator = upyun.UpYun(self.BUCKETNAME, user,
@@ -21,13 +22,16 @@ class UpyunCli(TranslatorIf):
         except Exception, e:
             print '[ERROR]Login error:%s' %str(e)
             return
-        print '[INFO]Login success'
+        return True
 
     def upload(self, localPath, remotePath):
         if not localPath:
             print '[ERROR]Local file %s not exists' %localPath
             return
-        remotePath += os.path.basename(localPath)
+
+        if remotePath.endswith('/'):
+            remotePath += os.path.basename(localPath)
+
         with open(localPath, 'rb') as fp:
             try:
                 if not self.operator.put(remotePath, fp):
