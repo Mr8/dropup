@@ -45,13 +45,13 @@ class DropboxCli(TranslatorIf):
         try:
             AccessToken, _ = OAuth.finish(AuToken)
         except ErrorResponse, e:
-            print('[ERROR] %s\n', str(e))
+            print '[ERROR] %s\n', str(e)
             return
 
         try:
             self.operator = dpClient.DropboxClient(AccessToken)
         except ErrorResponse, e:
-            print('[ERROR]Login error:%s' %str(e))
+            print '[ERROR]Login error:%s' %str(e)
             return
 
     def upload(self, localPath, remotePath):
@@ -59,7 +59,7 @@ class DropboxCli(TranslatorIf):
         TranslatorIf'''
 
         if not os.path.exists(localPath):
-            print('[ERRPR]Local file %s not exists')
+            print '[ERRPR]Local file %s not exists'
         return
 
         if not remotePath.startswith('/'):
@@ -69,13 +69,13 @@ class DropboxCli(TranslatorIf):
         try:
             retJson = self.operator.put_file(remotePath, fileObj)
         except ErrorResponse, e:
-            print('[ERROR]Upload file error:%s' %str(e))
+            print '[ERROR]Upload file error:%s' %str(e)
             return
 
         try:
             retDict = json.loads(retJson)
         except ValueError, e:
-            print('[ERROR]Upload file error:%s' %str(e))
+            print '[ERROR]Upload file error:%s' %str(e)
             return
 
         print('[INFO]Upload file %s success, file size:%s, upload time:%s'
@@ -93,7 +93,7 @@ class DropboxCli(TranslatorIf):
             localPath = os.path.join('./', os.path.basename(remotePath))
 
         if not os.path.exists(os.path.dirname(localPath)):
-            print('[ERROR]Not exists %s' %os.path.dirname(localPath))
+            print '[ERROR]Not exists %s' %os.path.dirname(localPath)
             return
 
         if os.path.exists(localPath):
@@ -101,7 +101,7 @@ class DropboxCli(TranslatorIf):
                 cover = raw_input('[INFO]File %s exists, '
                         'overwrite?[y/n]').strip().lower()
                 if not cover in ('y', 'n'):
-                    print('[INFO]Please input [y/n]')
+                    print '[INFO]Please input [y/n]'
                     continue
                 if cover == 'y':
                     break
@@ -110,7 +110,7 @@ class DropboxCli(TranslatorIf):
         try:
             remoteFile = self.operator.get_file(remotePath)
         except ErrorResponse, e:
-            print('[ERROR]Download File error:%s' %str(e))
+            print '[ERROR]Download File error:%s' %str(e)
             return
 
         with open(localPath, 'wb') as f:
@@ -133,7 +133,7 @@ class CmdLine(Cmd):
         '''A method which implement Cmd's interface'''
         return True
 
-    def do_login(self, user = None, pwd = None):
+    def do_login(self, user=None, pwd=None):
         '''login command'''
         return self.translator.login(user, pwd)
 
@@ -146,7 +146,7 @@ class CmdLine(Cmd):
 
         return self.translator.upload(localPath, remotePath)
 
-    def do_get(self, remotePath, localPath = None):
+    def do_get(self, remotePath, localPath=None):
         '''get command
         Argument List:[remotePath, localPath]
         ex:
@@ -158,6 +158,13 @@ class CmdLine(Cmd):
     def emptyline(self):
         '''command line with ENTER keyboard'''
         pass
+
+    def parseline(self, line):
+        if not line:
+            return (None, None, line)
+        parsedLine = Cmd.parseline(self, line)
+        ret = [parsedLine[0], tuple(parsedLine[1].split(' ')), line]
+        return ret
 
 STORE_CLOUD = {
     'dropbox' : DropboxCli,
