@@ -7,6 +7,8 @@ import os
 import json
 from cmd import Cmd
 
+from config import DROPBOXCONFIG
+
 from dropbox import client as dpClient
 from dropbox.rest import ErrorResponse
 
@@ -25,13 +27,13 @@ class TranslatorIf(object):
 class DropboxCli(TranslatorIf):
     '''Implement of TranslatorIf, dropbox client'''
 
-    APPKEY = ''
-    APPSEC = ''
+    APPKEY = DROPBOXCONFIG.APP_KEY
+    APPSEC = DROPBOXCONFIG.APP_SEC
 
-    def __init__(self, name):
+    def __init__(self):
         self.operator = False
 
-    def login(self):
+    def login(self, *arg, **wargs):
         '''Implement dropbox login, which use oauth2.0'''
 
         OAuth = dpClient.DropboxOAuth2FlowNoRedirect(self.APPKEY, self.APPSEC)
@@ -55,6 +57,7 @@ class DropboxCli(TranslatorIf):
     def upload(self, localPath, remotePath):
         '''Implement dropbox upload, which implement interface of Class
         TranslatorIf'''
+
         if not os.path.exists(localPath):
             print('[ERRPR]Local file %s not exists')
         return
@@ -111,10 +114,60 @@ class DropboxCli(TranslatorIf):
             f.write(remoteFile.read())
 
 class CmdLine(Cmd):
+    '''
+    Command line client, which inhance from cmd.Cmd.
+        Implemented two comdmand:
+            1.upload [localPath] [remotePath];
+            2.get [remotePath] [localPath];
+    '''
+
     def __init__(self, name, tranlator):
-        super(CmdLine, self).__init__()
+        Cmd.__init__(self)
         self.prompt = name + '> '
         self.translator = tranlator
 
+    def do_EOF(self):
+        '''A method which implement Cmd's interface'''
+        return True
 
+    def do_login(self, user = None, pwd = None):
+        '''login command'''
+        return self.translator.login(user, pwd)
+
+    def do_upload(self, localPath, remotePath):
+        '''upload command
+            ex:
+                upload /tmp/tmp.txt /remote/tmp.txt
+        '''
+
+        return self.translator.upload(localPath, remotePath)
+
+    def do_get(self, remotePath, localPath = None):
+        '''get command
+            ex:
+                get /remote/tmp.txt /tmp
+        '''
+
+        return self.translator.download(remotePath, localPath)
+
+STORE_CLOUD = {
+    'dropbox' : DropboxCli,
+    'upyun' : None
+}
+
+def usage():
+    '''Usage'''
+    print '[Usage]Need argument: [dropbox] or [upyun]'
+    exit(-1)
+
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv) < 2:
+        usage()
+    cloud = sys.argv[1].strip().lower()
+    if not cloud in STORE_CLOUD:
+        usage()
+
+    Translator = STORE_CLOUD[cloud]
+    CmdLine(cloud, Translator()).cmdloop()
 
