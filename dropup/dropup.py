@@ -13,6 +13,11 @@ from config import DROPBOXCONFIG
 from dropbox import client as dpClient
 from dropbox.rest import ErrorResponse
 
+def modify(func):
+    def inner(self, arg):
+        func(self, *arg)
+    return inner
+
 class TranslatorIf(object):
     '''A base interfaces of translator'''
 
@@ -143,6 +148,7 @@ class CmdLine(Cmd):
             self.login = True
             print '[INFO]Login success!'
 
+    @modify
     def do_upload(self, localPath, remotePath):
         '''upload command
         Argument List:[localPath, remotePath]
@@ -152,6 +158,7 @@ class CmdLine(Cmd):
 
         return self.translator.upload(localPath, remotePath)
 
+    @modify
     def do_get(self, remotePath, localPath=None):
         '''get command
         Argument List:[remotePath, localPath]
