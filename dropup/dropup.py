@@ -89,6 +89,9 @@ class DropboxCli(TranslatorIf):
         '''Implement dropbox download, which implement interface of Class
         TranslatorIf'''
 
+        if not localPath:
+            localPath = os.path.join('./', os.path.basename(remotePath))
+
         if not os.path.exists(os.path.dirname(localPath)):
             print('[ERROR]Not exists %s' %os.path.dirname(localPath))
             return
@@ -136,19 +139,25 @@ class CmdLine(Cmd):
 
     def do_upload(self, localPath, remotePath):
         '''upload command
-            ex:
-                upload /tmp/tmp.txt /remote/tmp.txt
+        Argument List:[localPath, remotePath]
+        ex:
+            upload /local/tmp.txt /remote/tmp.txt
         '''
 
         return self.translator.upload(localPath, remotePath)
 
     def do_get(self, remotePath, localPath = None):
         '''get command
-            ex:
-                get /remote/tmp.txt /tmp
+        Argument List:[remotePath, localPath]
+        ex:
+            get /remote/tmp.txt /local/tmp.txt
         '''
 
         return self.translator.download(remotePath, localPath)
+
+    def emptyline(self):
+        '''command line with ENTER keyboard'''
+        pass
 
 STORE_CLOUD = {
     'dropbox' : DropboxCli,
