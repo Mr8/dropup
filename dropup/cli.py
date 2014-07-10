@@ -18,10 +18,11 @@ class CmdLine(Cmd):
         1.upload [localPath] [remotePath];
         2.get [remotePath] [localPath];
     '''
-    ALL_CMD = ['do_upload', 'do_get', 'do_quit']
+    ALL_CMD = ['do_login', 'do_upload', 'do_get', 'do_quit']
 
     def __init__(self, name, tranlator):
         Cmd.__init__(self)
+        self.name = name
         self.prompt = name + '> '
         self.translator = tranlator
         self.login = None
@@ -30,12 +31,18 @@ class CmdLine(Cmd):
         '''A method which implement Cmd's interface'''
         return True
 
-    def do_login(self, user=None, pwd=None):
+    def do_login(self, arg):
         '''login command
-        [*]No argument, dropbox need redirect to OAuth webset and get token'''
+        ex:
+            login user, pwd
+        [*]If dropbox: no argument need redirect to OAuth webset and get token'''
+        user, pwd = None, None
+        if arg and len(arg) == 2:
+            user, pwd = arg
+        print user, pwd
         if self.translator.login(user, pwd):
             self.login = True
-            print '[INFO]Login success!'
+            print '[INFO]Login %s success!' %self.name
 
     def do_upload(self, arg):
         '''upload command
@@ -91,7 +98,7 @@ class CmdLine(Cmd):
             print '---------------------------------'
             print getattr(self, cmd).__doc__ or ''
 
-    def do_quit(self):
+    def do_quit(self, arg):
         '''quit command
         Non arguments
         quit this console'''
@@ -110,16 +117,18 @@ class CmdLine(Cmd):
             else:
                 return lines[0], lines[1:], line
 
-        if line and line.strip() in ('login', 'help', 'EOF'):
-            return _parseline(line)
-
-        if not self.login:
-            print '[INFO]Please login first'
-            print getattr(self, 'do_login').__doc__
-            return (None, None, line)
         if not line:
             return (None, None, line)
-        return _parseline(line)
+
+        cmd, arg, string = _parseline(line)
+        if cmd in ('help', 'EOF', 'quit', 'login'):
+            return cmd, arg, string
+
+        #other commands
+        if not self.login:
+            print '[INFO]Please login first'
+            return (None, None, line)
+        return cmd, arg, string
 
 STORE_CLOUD = {
     'dropbox' : DropboxCli,
