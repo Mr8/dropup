@@ -95,9 +95,21 @@ class CmdLine(Cmd):
         if not localPath:
             localPath = os.path.join('./', os.path.basename(remotePath))
 
-        if not os.path.exists(os.path.dirname(localPath)):
+        elif not os.path.exists(os.path.dirname(localPath)):
             print '[ERROR]Not exists %s' %os.path.dirname(localPath)
             return
+
+        elif os.path.exists(localPath):
+            while 1:
+                cover = raw_input('[INFO]File %s exists, '
+                        'overwrite?[y/n]' %localPath).strip().lower()
+                if not cover in ('y', 'n'):
+                    print '[INFO]Please input [y/n]'
+                    continue
+                if cover == 'y':
+                    break
+                return
+
 
         return self.translator.download(remotePath, localPath)
 
