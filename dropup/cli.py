@@ -77,7 +77,7 @@ class CmdLine(Cmd):
             get /remote/tmp.txt /local/tmp.txt
         or:
             get /remote/tmp.txt
-            [*] default local store path ./
+        [*] default local store path ./
         '''
         if not arg:
             print '[ERROR]Get argument error, not null'
