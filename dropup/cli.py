@@ -40,7 +40,11 @@ class CmdLine(Cmd):
         '''login command
         ex:
             login user, pwd
-        [*]If dropbox: no argument need redirect to OAuth webset and get token'''
+        [*]If dropbox:
+        ex:
+            login
+        no argument need. Redirect to OAuth webset and get token'''
+
         user, pwd = None, None
         if arg and len(arg) == 2:
             user, pwd = arg
