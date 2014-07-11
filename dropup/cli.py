@@ -61,7 +61,7 @@ class CmdLine(Cmd):
 
         localPath, remotePath = arg
         if not os.path.exists(localPath):
-            print '[ERRPR]Local file %s not exists' %localPath
+            print '[ERROR]Local file %s not exists' %localPath
             return
 
         if not remotePath.startswith('/'):
