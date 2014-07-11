@@ -10,6 +10,11 @@ from cmd import Cmd
 from dropup.drop import DropboxCli
 from dropup.up import UpyunCli
 
+STORE_CLOUD = {
+    'dropbox' : DropboxCli,
+    'upyun' : UpyunCli
+}
+
 
 class CmdLine(Cmd):
     '''
@@ -70,6 +75,9 @@ class CmdLine(Cmd):
         Argument List:[remotePath, localPath]
         ex:
             get /remote/tmp.txt /local/tmp.txt
+        or:
+            get /remote/tmp.txt
+            [*] default local store path ./
         '''
         if not arg:
             print '[ERROR]Get argument error, not null'
@@ -109,6 +117,9 @@ class CmdLine(Cmd):
         pass
 
     def parseline(self, line):
+        '''Implement of parseline which defined in Cmd;
+        As a hook of each console command'''
+
         def _parseline(line):
             '''parse line with white space'''
             lines = shlex.split(line)
@@ -120,6 +131,7 @@ class CmdLine(Cmd):
         if not line:
             return (None, None, line)
 
+        #commands to interactive
         cmd, arg, string = _parseline(line)
         if cmd in ('help', 'EOF', 'quit', 'login'):
             return cmd, arg, string
@@ -130,10 +142,6 @@ class CmdLine(Cmd):
             return (None, None, line)
         return cmd, arg, string
 
-STORE_CLOUD = {
-    'dropbox' : DropboxCli,
-    'upyun' : UpyunCli
-}
 
 def usage():
     '''Usage'''
