@@ -3,8 +3,6 @@
 
 '''Dropbox client translator implement'''
 
-import os
-import json
 
 from dropbox import client as dpClient
 from dropbox.rest import ErrorResponse
@@ -26,20 +24,20 @@ class DropboxCli(TranslatorIf):
     def login(self, *arg, **wargs):
         '''Implement dropbox login, which use oauth2.0'''
 
-        OAuth = dpClient.DropboxOAuth2FlowNoRedirect(self.APPKEY, self.APPSEC)
-        RetUrl = OAuth.start()
+        oAuth = dpClient.DropboxOAuth2FlowNoRedirect(self.APPKEY, self.APPSEC)
+        retUrl = oAuth.start()
         print('[INFO]To login Dropbox, please copy this link to your '
-              'web browser:[%s]' %RetUrl)
-        AuToken = raw_input('Input token here:')
+              'web browser:[%s]' %retUrl)
+        auToken = raw_input('Input token here:')
 
         try:
-            AccessToken, _ = OAuth.finish(AuToken)
+            accessToken, _ = oAuth.finish(auToken)
         except ErrorResponse, e:
             print '[ERROR] %s\n', str(e)
             return
 
         try:
-            self.operator = dpClient.DropboxClient(AccessToken)
+            self.operator = dpClient.DropboxClient(accessToken)
         except ErrorResponse, e:
             print '[ERROR]Login error:%s' %str(e)
             return
@@ -55,6 +53,8 @@ class DropboxCli(TranslatorIf):
         except ErrorResponse, e:
             print '[ERROR]Upload file error:%s' %str(e)
             return
+        finally:
+            fileObj.close()
 
         print('[INFO]Upload file %s success, file size:%s, upload time:%s'
                 %(localPath,
