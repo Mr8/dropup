@@ -1,34 +1,36 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+'''Dropbox client translator implement'''
 
 import os
 import json
 
-
 from dropbox import client as dpClient
 from dropbox.rest import ErrorResponse
+
 from .trans import TranslatorIf
 from .config import DROPBOXCONFIG
 
 
 class DropboxCli(TranslatorIf):
-    '''Implement of TranslatorIf, dropbox client'''
+    '''Implement of TranslatorIf, dropbox client,
+    in this moudle, methods suppose that all argument be checked'''
 
     APPKEY = DROPBOXCONFIG.APP_KEY
     APPSEC = DROPBOXCONFIG.APP_SEC
 
     def __init__(self):
-        self.operator = False
+        self.operator = None
 
     def login(self, *arg, **wargs):
         '''Implement dropbox login, which use oauth2.0'''
 
         OAuth = dpClient.DropboxOAuth2FlowNoRedirect(self.APPKEY, self.APPSEC)
         RetUrl = OAuth.start()
-        print('[INFO]Login to Dropbox, please copy this link to your '
+        print('[INFO]To login Dropbox, please copy this link to your '
               'web browser:[%s]' %RetUrl)
-        AuToken = raw_input('Input code here:')
+        AuToken = raw_input('Input token here:')
 
         try:
             AccessToken, _ = OAuth.finish(AuToken)
@@ -46,7 +48,6 @@ class DropboxCli(TranslatorIf):
     def upload(self, localPath, remotePath):
         '''Implement dropbox upload, which implement interface of Class
         TranslatorIf'''
-
 
         fileObj = open(localPath, 'rb')
         try:
