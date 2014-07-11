@@ -51,15 +51,9 @@ class DropboxCli(TranslatorIf):
 
         fileObj = open(localPath, 'rb')
         try:
-            retJson = self.operator.put_file(remotePath, fileObj)
+            retDict = self.operator.put_file(remotePath, fileObj)
         except ErrorResponse, e:
             print '[ERROR]Upload file error:%s' %str(e)
-            return
-
-        try:
-            retDict = json.dumps(retJson)
-        except (ValueError, TypeError) :
-            print '[ERROR]Upload file error'
             return
 
         print('[INFO]Upload file %s success, file size:%s, upload time:%s'
@@ -72,17 +66,6 @@ class DropboxCli(TranslatorIf):
     def download(self, remotePath, localPath):
         '''Implement dropbox download, which implement interface of Class
         TranslatorIf'''
-
-        if os.path.exists(localPath):
-            while 1:
-                cover = raw_input('[INFO]File %s exists, '
-                        'overwrite?[y/n]').strip().lower()
-                if not cover in ('y', 'n'):
-                    print '[INFO]Please input [y/n]'
-                    continue
-                if cover == 'y':
-                    break
-                return
 
         try:
             remoteFile = self.operator.get_file(remotePath)
